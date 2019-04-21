@@ -52,7 +52,29 @@ class REST {
             }
         }
         dataTask.resume()
+    }
+    
+    static func saveCar(with car: Car, onComplete: @escaping (Bool) -> Void) {
+        guard let url = URL(string: baseURL) else {
+            onComplete(false)
+            return
+        }
+        guard let jsonData = try? JSONEncoder().encode(car) else {
+            onComplete(false)
+            return
+        }
         
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.httpBody = jsonData
         
+        let dataTask = session.dataTask(with: request) { (data, response, error) in
+            guard error == nil, let response = response as? HTTPURLResponse, response.statusCode == 200, data != nil else {
+                onComplete(false)
+                return
+            }
+            onComplete(true)
+        }
+        dataTask.resume()
     }
 }
