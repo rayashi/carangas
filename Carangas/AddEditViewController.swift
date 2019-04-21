@@ -23,6 +23,13 @@ class AddEditViewController: UIViewController {
     // MARK: - Super Methods
     override func viewDidLoad() {
         super.viewDidLoad()
+        if car != nil {
+            tfPrice.text = String(car.price)
+            tfBrand.text = car.brand
+            tfName.text = car.name
+            scGasType.selectedSegmentIndex = car.gasType
+            btAddEdit.setTitle("Atualizar Carro", for: .normal)
+        }
     }
     
     // MARK: - IBActions

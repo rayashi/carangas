@@ -12,7 +12,7 @@ enum RESTErrorType {
 
 class REST {
     
-    private static let baseURL = "https://carangas.herokuapp.com/cars"
+    private static var baseURL = "https://carangas.herokuapp.com/cars"
     
     private static let config: URLSessionConfiguration = {
         var con = URLSessionConfiguration.default
@@ -55,7 +55,8 @@ class REST {
     }
     
     static func saveCar(with car: Car, onComplete: @escaping (Bool) -> Void) {
-        guard let url = URL(string: baseURL) else {
+
+        guard let url = URL(string: car._id != nil ? "\(baseURL)/\(car._id ?? "")" : baseURL) else {
             onComplete(false)
             return
         }
@@ -65,7 +66,7 @@ class REST {
         }
         
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
+        request.httpMethod = car._id != nil ? "PUT" : "POST"
         request.httpBody = jsonData
         
         let dataTask = session.dataTask(with: request) { (data, response, error) in
