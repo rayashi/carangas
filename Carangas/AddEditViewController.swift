@@ -45,15 +45,25 @@ class AddEditViewController: UIViewController {
         }
         car.price = Double(tfPrice.text!)!
         car.gasType = scGasType.selectedSegmentIndex
-        
-        REST.saveCar(with: car) { (success) in
-            if success {
-                DispatchQueue.main.async {
-                    self.navigationController?.popViewController(animated: true)
+
+        if car._id == nil {
+            REST.createCar(with: car, onComplete: { (success) in
+                if success {
+                    self.goback()
                 }
-            } else {
-                print("Erro")
-            }
+            })
+        } else {
+            REST.updateCar(with: car, onComplete: { (success) in
+                if success {
+                    self.goback()
+                }
+            })
+        }
+    }
+    
+    func goback() {
+        DispatchQueue.main.async {
+            self.navigationController?.popViewController(animated: true)
         }
     }
 

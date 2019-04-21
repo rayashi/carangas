@@ -10,6 +10,12 @@ enum RESTErrorType {
     case responseStatusCode(code: Int)
 }
 
+enum OperationType {
+    case create
+    case update
+    case delete
+}
+
 class REST {
     
     private static var baseURL = "https://carangas.herokuapp.com/cars"
@@ -54,8 +60,17 @@ class REST {
         dataTask.resume()
     }
     
-    static func saveCar(with car: Car, onComplete: @escaping (Bool) -> Void) {
-
+    static func createCar(with car: Car, onComplete: @escaping (Bool) -> Void) {
+        executeOperation(with: car, operation: .create, onComplete: onComplete)
+    }
+    static func updateCar(with car: Car, onComplete: @escaping (Bool) -> Void) {
+        executeOperation(with: car, operation: .update, onComplete: onComplete)
+    }
+    static func deleteCar(with car: Car, onComplete: @escaping (Bool) -> Void) {
+        executeOperation(with: car, operation: .delete, onComplete: onComplete)
+    }
+    
+    private static func executeOperation(with car: Car, operation: OperationType, onComplete: @escaping (Bool) -> Void) {
         guard let url = URL(string: car._id != nil ? "\(baseURL)/\(car._id ?? "")" : baseURL) else {
             onComplete(false)
             return
@@ -64,9 +79,17 @@ class REST {
             onComplete(false)
             return
         }
-        
         var request = URLRequest(url: url)
-        request.httpMethod = car._id != nil ? "PUT" : "POST"
+        var method: String
+        switch operation {
+        case .create:
+            method = "POST"
+        case .update:
+            method = "PUT"
+        case .delete:
+            method = "DELETE"
+        }
+        request.httpMethod = method
         request.httpBody = jsonData
         
         let dataTask = session.dataTask(with: request) { (data, response, error) in
